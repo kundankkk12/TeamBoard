@@ -1,0 +1,392 @@
+{
+  "info": {
+    "_postman_id": "9a6c3b2b-3b2b-4e7b-b18d-6d8c5d4e2a10",
+    "name": "TeamBoard API Tests",
+    "description": "Collection for TeamBoard backend validation. Covers all 11 required scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "username", "value": "acmecorp" },
+    { "key": "password", "value": "securepass123" },
+    { "key": "company_name", "value": "Acme Corp" },
+    { "key": "email", "value": "dev@acmecorp.com" },
+    { "key": "access_token", "value": "" },
+    { "key": "admin_access_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Register New Company",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "var data = pm.response.json();",
+              "pm.collectionVariables.set('access_token', data.access);",
+              "pm.test('api_key exists', function () {",
+              "  pm.expect(data.api_key).to.exist;",
+              "});",
+              "pm.test('access token exists', function () {",
+              "  pm.expect(data.access).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/register/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "register", ""]
+        },
+        "description": "Scenario 1: Register a new company. Expected 201 + api_key + JWT token."
+      }
+    },
+    {
+      "name": "02 - Register Duplicate Username",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/register/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "register", ""]
+        },
+        "description": "Scenario 2: Register with duplicate username. Expected 400."
+      }
+    },
+    {
+      "name": "03 - Login Valid Credentials",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "var data = pm.response.json();",
+              "pm.collectionVariables.set('access_token', data.access);",
+              "pm.test('access token exists', function () {",
+              "  pm.expect(data.access).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/login/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "login", ""]
+        },
+        "description": "Scenario 3: Login with valid credentials. Expected 200 + JWT token."
+      }
+    },
+    {
+      "name": "04 - Login Wrong Password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"wrongpass\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/login/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "login", ""]
+        },
+        "description": "Scenario 4: Login with wrong password. Expected 401."
+      }
+    },
+    {
+      "name": "05 - Query KB Without Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"search\": \"select_related\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/kb/query/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "kb", "query", ""]
+        },
+        "description": "Scenario 5: Query KB without token. Expected 401."
+      }
+    },
+    {
+      "name": "06 - Query KB With Results",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "var data = pm.response.json();",
+              "pm.test('Results array exists', function () {",
+              "  pm.expect(data.results).to.be.an('array');",
+              "});",
+              "pm.test('Count is greater than zero', function () {",
+              "  pm.expect(data.count).to.be.above(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"search\": \"select_related\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/kb/query/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "kb", "query", ""]
+        },
+        "description": "Scenario 6: Query KB with valid token and keyword with results. Expected 200 + results list."
+      }
+    },
+    {
+      "name": "07 - Query KB No Matching Results",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "var data = pm.response.json();",
+              "pm.test('Results array is empty', function () {",
+              "  pm.expect(data.results).to.be.an('array').that.is.empty;",
+              "});",
+              "pm.test('Count is zero', function () {",
+              "  pm.expect(data.count).to.eql(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"search\": \"zzzz-no-match\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/kb/query/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "kb", "query", ""]
+        },
+        "description": "Scenario 7: Query KB with valid token and no matching results. Expected 200 + empty list, count 0."
+      }
+    },
+    {
+      "name": "08 - Query KB Missing Search",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/kb/query/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "kb", "query", ""]
+        },
+        "description": "Scenario 8: Query KB with missing search field. Expected 400."
+      }
+    },
+    {
+      "name": "09 - Usage Summary Client Forbidden",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 403', function () {",
+              "  pm.response.to.have.status(403);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/admin/usage-summary/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "usage-summary", ""]
+        },
+        "description": "Scenario 9: Usage summary with CLIENT token. Expected 403."
+      }
+    },
+    {
+      "name": "10 - Usage Summary Admin Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "var data = pm.response.json();",
+              "pm.test('total_queries exists', function () {",
+              "  pm.expect(data.total_queries).to.not.equal(undefined);",
+              "});",
+              "pm.test('active_companies exists', function () {",
+              "  pm.expect(data.active_companies).to.not.equal(undefined);",
+              "});",
+              "pm.test('top_search_terms is an array', function () {",
+              "  pm.expect(data.top_search_terms).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{admin_access_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/admin/usage-summary/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "usage-summary", ""]
+        },
+        "description": "Scenario 10: Usage summary with admin token. Expected 200 + stats. Before running, promote company role to admin and update admin_access_token from a fresh login."
+      }
+    },
+    {
+      "name": "11 - Verify QueryLog Rows in PGAdmin (Manual)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/admin/usage-summary/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "usage-summary", ""]
+        },
+        "description": "Scenario 11 (manual): Open PGAdmin Query Tool and verify rows in api_querylog for scenario 6 and 7 terms. Suggested SQL:\nSELECT q.id, u.username, q.search_term, q.results_count, q.queried_at\nFROM api_querylog q\nJOIN api_company c ON q.company_id = c.id\nJOIN auth_user u ON c.user_id = u.id\nORDER BY q.queried_at DESC;"
+      }
+    }
+  ]
+}
