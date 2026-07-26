@@ -12,6 +12,36 @@ This project implements the backend requirements for:
 - PostgreSQL-based persistence
 - Docker-based database setup
 
+## Submission Artifacts
+
+Use this section as a quick index for evaluation.
+
+- Backend source code:
+  - `TeamBoard/settings.py`
+  - `TeamBoard/urls.py`
+  - `api/models.py`
+  - `api/views.py`
+  - `api/urls.py`
+- Signal auto-creation setup:
+  - `api/signals.py`
+  - `api/apps.py`
+- Custom admin permission:
+  - `api/permissions.py`
+- PostgreSQL Docker setup:
+  - `docker-compose.yml`
+- Environment template (credentials format):
+  - `.env.example`
+- Pinned dependencies:
+  - `requirements.txt`
+- Database seed command:
+  - `api/management/commands/seed_kb_entries.py`
+- API test coverage:
+  - `api/tests.py`
+- Full project documentation and run instructions:
+  - `README.md`
+- Postman collection export (add your final exported file here):
+  - `postman/teamboard-postman-collection.json`
+
 ## Project Goal
 
 The backend solves four business problems:
@@ -1353,6 +1383,66 @@ Press `Ctrl+C` in the terminal where `runserver` is running.
 
 ```bash
 docker compose down
+```
+
+## Final Submission Checklist
+
+Use this checklist before submitting.
+
+### A. Repository Requirements
+
+- [ ] Backend code is pushed to GitHub.
+- [ ] All four endpoints exist and are working:
+  - [ ] `POST /api/auth/register/`
+  - [ ] `POST /api/auth/login/`
+  - [ ] `POST /api/kb/query/`
+  - [ ] `GET /api/admin/usage-summary/`
+- [ ] PostgreSQL runs via Docker using `docker-compose.yml`.
+- [ ] Credentials are stored in local `.env` only.
+- [ ] `.env` is not committed.
+- [ ] `.env.example` is committed.
+- [ ] Dependencies are pinned in `requirements.txt`.
+- [ ] Signal logic exists in `api/signals.py`.
+- [ ] Signal wiring is connected via `ApiConfig.ready()` in `api/apps.py`.
+- [ ] Custom admin permission exists in `api/permissions.py`.
+
+### B. Postman Submission Requirement
+
+- [ ] Export the Postman collection as JSON (Collection v2.1).
+- [ ] Save it in the repository, for example:
+
+```text
+postman/teamboard-postman-collection.json
+```
+
+- [ ] Ensure the collection covers all 11 scenarios in the Postman section above.
+
+### C. README Requirement
+
+- [ ] README explains database setup.
+- [ ] README explains how to run the server.
+- [ ] README explains how to run migrations.
+- [ ] README explains how to seed KB entries.
+
+### D. Quick Verification Commands
+
+Run these before final push:
+
+```bash
+docker compose ps
+python manage.py check
+python manage.py migrate
+python manage.py seed_kb_entries --reset
+python manage.py test api
+```
+
+### E. Final Git Commands
+
+```bash
+git status
+git add .
+git commit -m "Finalize submission artifacts"
+git push
 ```
 
 ## Summary
